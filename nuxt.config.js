@@ -1,0 +1,61 @@
+const config = require('config')
+const webpack = require('webpack')
+
+module.exports = {
+  srcDir: 'public/',
+  build: {
+    publicPath: config.publicUrl + '/_nuxt/',
+    transpile: [/@koumoul/],
+    babel: {
+      sourceType: 'unambiguous'
+    },
+    extend (config, { isServer, isDev, isClient }) {
+      // Ignore all locale files of moment.js, those we want are loaded in plugins/moment.js
+      config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
+    }
+  },
+  plugins: [
+    { src: '~plugins/session', ssr: false },
+    { src: '~plugins/ws', ssr: false },
+    { src: '~plugins/moment' }
+  ],
+  router: {
+    base: new URL(config.publicUrl + '/').pathname
+  },
+  modules: ['@nuxtjs/axios', 'cookie-universal-nuxt'],
+  axios: {
+    browserBaseURL: config.publicUrl + '/',
+    baseURL: `http://localhost:${config.port}/`
+  },
+  buildModules: ['@nuxtjs/vuetify'],
+  vuetify: {
+    icons: {
+      iconfont: 'mdi'
+    },
+    theme: {
+      themes: {
+        light: {
+          // primary: colors.lightGreen.accent4,
+          primary: '#60B800', // colors.lightGreen.darken1,
+          accent: '#64DD17', // colors.lightGreen.accent4,
+          error: '#F44336' // colors.red.base
+        }
+      }
+    }
+  },
+  env: {
+    publicUrl: config.publicUrl,
+    wsPublicUrl: config.wsPublicUrl,
+    directoryUrl: config.directoryUrl
+  },
+  head: {
+    title: 'Notify',
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'application', name: 'application-name', content: 'Notify' },
+      { hid: 'description', name: 'description', content: 'Push notifications to your users.' },
+      { hid: 'robots', name: 'robots', content: 'noindex' }
+    ]
+  }
+}

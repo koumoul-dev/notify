@@ -1,0 +1,65 @@
+{
+  "name": "notify",
+  "version": "0.0.0",
+  "description": "A simple server to manage notifications feeds for our users. Notifications are stored and pushed to various channels.",
+  "main": "index.js",
+  "scripts": {
+    "dev-server": "NODE_ENV=development nodemon server",
+    "dev-client": "NODE_ENV=development nuxt",
+    "build": "nuxt build",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "test": "NODE_ENV=test mocha --exit --timeout 10000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koumoul-dev/notify.git"
+  },
+  "keywords": [
+    "notification",
+    "push",
+    "publish/subscribe"
+  ],
+  "author": "Alban Mouton <alban.mouton@gmail.com>",
+  "license": "AGPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/koumoul-dev/notify/issues"
+  },
+  "homepage": "https://github.com/koumoul-dev/notify#readme",
+  "dependencies": {
+    "@koumoul/nuxt-build-cache": "^0.3.0",
+    "@koumoul/sd-express": "^0.15.1",
+    "@koumoul/sd-vue": "^0.14.2",
+    "@koumoul/vuetify-jsonschema-form": "^0.36.0",
+    "@nuxtjs/axios": "^5.8.0",
+    "@nuxtjs/vuetify": "^1.9.0",
+    "ajv": "^6.10.2",
+    "body-parser": "^1.19.0",
+    "config": "^3.2.4",
+    "cookie-parser": "^1.4.4",
+    "cookie-universal-nuxt": "^2.0.18",
+    "event-to-promise": "^0.8.0",
+    "express": "^4.17.1",
+    "moment": "^2.24.0",
+    "mongodb": "^3.3.3",
+    "nodemon": "^1.19.4",
+    "nuxt": "^2.10.2",
+    "reconnecting-websocket": "^4.2.0",
+    "shortid": "^2.2.15",
+    "vue-moment": "^4.0.0",
+    "vuetify": "^2.1.9",
+    "ws": "^7.2.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.6.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^6.0.0",
+    "eslint-plugin-vuetify": "^1.0.0-beta.5",
+    "http-proxy-middleware": "^0.20.0",
+    "mocha": "^6.2.2"
+  }
+}
