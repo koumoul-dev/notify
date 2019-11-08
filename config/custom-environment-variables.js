@@ -1,4 +1,5 @@
 module.exports = {
+  port: 'PORT',
   publicUrl: 'PUBLIC_URL',
   wsPublicUrl: 'WS_PUBLIC_URL',
   directoryUrl: 'DIRECTORY_URL',
