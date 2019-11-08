@@ -35,19 +35,15 @@ module.exports = {
     },
     theme: {
       themes: {
-        light: {
-          // primary: colors.lightGreen.accent4,
-          primary: '#60B800', // colors.lightGreen.darken1,
-          accent: '#64DD17', // colors.lightGreen.accent4,
-          error: '#F44336' // colors.red.base
-        }
+        light: config.theme.colors
       }
     }
   },
   env: {
     publicUrl: config.publicUrl,
     wsPublicUrl: config.wsPublicUrl,
-    directoryUrl: config.directoryUrl
+    directoryUrl: config.directoryUrl,
+    theme: config.theme
   },
   head: {
     title: 'Notify',
