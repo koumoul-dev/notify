@@ -1,12 +1,21 @@
 <template>
   <v-container fluid data-iframe-height class="py-0">
-    <v-subheader>Recevoir les notifications pour&nbsp;<i>{{ $route.query.title }}</i>.</v-subheader>
+    <v-subheader class="px-0">
+      Me notifier pour {{ $route.query.title }}.
+    </v-subheader>
     <v-row v-if="subscription">
       <v-col class="py-0">
-        <v-switch v-model="subscription.outputs" class="mt-0" label="Notification Web" value="web" @change="patch" />
+        <v-switch
+          v-model="subscription.outputs" dense hide-details class="mt-0" label="navigateur"
+          value="web"
+          @change="patch"
+        />
       </v-col>
       <v-col class="py-0">
-        <v-switch v-model="subscription.outputs" class="mt-0" label="Envoi de mail" value="email" @change="patch" />
+        <v-switch
+          v-model="subscription.outputs" dense hide-details class="mt-0" label="email"
+          value="email" @change="patch"
+        />
       </v-col>
     </v-row>
     <v-progress-circular v-else indeterminate size="20" color="primary" />
@@ -17,7 +26,7 @@
 import { mapState, mapGetters } from 'vuex'
 
 export default {
-  layout: 'void',
+  layout: 'embed',
   data: () => ({
     subscription: null
   }),
