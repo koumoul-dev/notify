@@ -1,6 +1,7 @@
 const express = require('express')
 const shortid = require('shortid')
 const config = require('config')
+const axios = require('axios')
 const ajv = require('ajv')()
 const schema = require('../../contract/notification')
 const validate = ajv.compile(schema)
@@ -38,14 +39,13 @@ router.post('', asyncWrap(async (req, res, next) => {
 
   const topicParts = req.body.topic.key.split(':')
   const topicKeys = topicParts.map((part, i) => topicParts.slice(0, i + 1).join(':'))
-  const date = new Date()
+  const date = new Date().toISOString()
 
   const subscriptionsCursor = db.collection('subscriptions')
     .find({ 'sender.type': req.body.sender.type, 'sender.id': req.body.sender.id, 'topic.key': { $in: topicKeys } })
 
   while (await subscriptionsCursor.hasNext()) {
     const subscription = await subscriptionsCursor.next()
-    // TODO, send to other channels: email, etc.
     const notification = {
       ...req.body,
       _id: shortid.generate(),
@@ -53,7 +53,19 @@ router.post('', asyncWrap(async (req, res, next) => {
       date
     }
     await db.collection('notifications').insertOne(notification)
-    req.app.get('publishWS')([`${subscription.recipient.type}:${subscription.recipient.id}`], notification)
+    if (subscription.outputs.includes('web')) {
+      req.app.get('publishWS')([`user:${subscription.recipient.id}:notifications`], notification)
+    }
+    if (subscription.outputs.includes('email')) {
+      const mail = {
+        to: [{ type: 'user', ...subscription.recipient }],
+        subject: notification.title,
+        text: notification.body
+      }
+      axios.post(config.directoryUrl + '/api/mails', mail, { params: { key: config.secretKeys.sendMails } }).catch(err => {
+        console.error('Failed to send mail', err)
+      })
+    }
   }
 
   res.status(200).json(req.body)

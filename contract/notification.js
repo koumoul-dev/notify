@@ -14,7 +14,7 @@ module.exports = {
     },
     title: {
       type: 'string',
-      title: 'Libellé'
+      title: 'Titre'
     },
     body: {
       type: 'string',

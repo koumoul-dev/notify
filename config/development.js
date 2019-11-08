@@ -1,5 +1,6 @@
 module.exports = {
   secretKeys: {
-    notifications: 'notifications-secret'
+    notifications: 'notifications-secret',
+    sendMails: 'sendmails-secret'
   }
 }

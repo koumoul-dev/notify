@@ -6,7 +6,7 @@ const topicRef = require('./partial/topic-ref')
 module.exports = {
   type: 'object',
   additionalProperties: false,
-  required: ['title', 'sender', 'topic', 'recipient'],
+  required: ['title', 'sender', 'topic', 'recipient', 'outputs'],
   properties: {
     _id: {
       type: 'string',
@@ -21,6 +21,21 @@ module.exports = {
     sender: owner,
     topic: topicRef,
     recipient,
+    outputs: {
+      type: 'array',
+      title: 'Sorties',
+      default: ['web'],
+      items: {
+        type: 'string',
+        oneOf: [{
+          const: 'web',
+          title: 'Notifications Web'
+        }, {
+          const: 'email',
+          title: 'Envoi de mail'
+        }]
+      }
+    },
     created: modifier,
     updated: modifier
   }

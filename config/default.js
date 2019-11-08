@@ -8,6 +8,7 @@ module.exports = {
   // secrets that can be used to configure global webhooks for example to update users and organizations
   secretKeys: {
     identities: null,
-    notifications: null
+    notifications: null,
+    sendMails: null
   }
 }

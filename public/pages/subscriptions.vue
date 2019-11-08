@@ -33,6 +33,11 @@
                   <span><strong>Destinataire : </strong> {{ sub.recipient.name }}</span>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item dense>
+                <v-list-item-content>
+                  <span><strong>Sorties : </strong> {{ sub.outputs && sub.outputs.join(', ') }}</span>
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-card-text>
           <v-divider />
@@ -53,7 +58,7 @@ import { mapState, mapGetters } from 'vuex'
 import eventBus from '~/assets/event-bus'
 import EditDialog from '~/components/edit-dialog'
 import RemoveConfirm from '~/components/remove-confirm'
-import schema from '../../contract/subscription.js'
+const schema = JSON.parse(JSON.stringify(require('../../contract/subscription.js')))
 Object.keys(schema.properties).forEach(k => {
   if (schema.properties[k].readOnly) delete schema.properties[k]
 })

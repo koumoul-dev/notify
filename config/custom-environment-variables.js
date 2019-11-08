@@ -6,6 +6,7 @@ module.exports = {
   mongoUrl: 'MONGO_URL',
   secretKeys: {
     identities: 'SECRET_IDENTITIES',
-    notifications: 'SECRET_NOTIFICATIONS'
+    notifications: 'SECRET_NOTIFICATIONS',
+    sendMails: 'SECRET_SENDMAILS'
   }
 }
