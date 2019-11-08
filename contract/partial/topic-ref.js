@@ -1,7 +1,7 @@
 module.exports = {
   type: 'object',
   additionalProperties: false,
-  required: ['key', 'title'],
+  required: ['key'],
   properties: {
     key: {
       type: 'string',

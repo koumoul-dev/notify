@@ -52,6 +52,7 @@ router.post('', asyncWrap(async (req, res, next) => {
       recipient: subscription.recipient,
       date
     }
+    if (!req.body.topic.title && subscription.topic.title) notification.topic.title = subscription.topic.title
     await db.collection('notifications').insertOne(notification)
     if (subscription.outputs.includes('web')) {
       req.app.get('publishWS')([`user:${subscription.recipient.id}:notifications`], notification)
