@@ -13,20 +13,26 @@ router.get('', asyncWrap(async (req, res, next) => {
   const sort = findUtils.sort(req.query.sort)
   const [skip, size] = findUtils.pagination(req.query)
   const query = {}
+  if (!req.query.recipient && !(req.query.senderType && req.query.senderId)) {
+    return res.status(400).send('You must filter either with recipient or senderType/senderId params')
+  }
   if (req.query.recipient) {
     if (req.query.recipient !== req.user.id) {
       return res.status(403).send('You can only filter on recipient with your own id')
     }
     query['recipient.id'] = req.query.recipient
-  } else if (req.query.senderType && req.query.senderId) {
-    if (req.query.sendType !== req.activeAccount.type || req.query.sendId !== req.activeAccount.id || req.activeAccountRole !== 'admin') {
+  }
+  if (req.query.senderType && req.query.senderId) {
+    if (!req.query.recipient && (req.query.sendType !== req.activeAccount.type || req.query.sendId !== req.activeAccount.id || req.activeAccountRole !== 'admin')) {
       return res.status(403).send('You can only filter on sender if your admin of it')
     }
     query['sender.type'] = req.query.senderType
     query['sender.id'] = req.query.senderId
-  } else {
-    return res.status(400).send('You must filter either with recipient or senderType/senderId params')
   }
+  if (req.query.topic) {
+    query['topic.key'] = req.query.topic
+  }
+
   const subscriptions = req.app.get('db').collection('subscriptions')
   const [results, count] = await Promise.all([
     size > 0 ? subscriptions.find(query).limit(size).skip(skip).sort(sort).toArray() : Promise.resolve([]),
@@ -40,6 +46,7 @@ router.post('', asyncWrap(async (req, res, next) => {
   const db = req.app.get('db')
   const valid = validate(req.body)
   if (!valid) return res.status(400).send(validate.errors)
+  req.body.title = req.body.title || `${req.body.topic.title} (${req.body.recipient.name})`
   const existingSubscription = req.body._id && await db.collection('subscriptions').findOne({ _id: req.body._id })
   req.body._id = req.body._id || shortid.generate()
   req.body.updated = { id: req.user.id, name: req.user.name, date: new Date() }

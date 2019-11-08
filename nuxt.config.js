@@ -15,6 +15,7 @@ module.exports = {
     }
   },
   plugins: [
+    { src: '~plugins/iframe-resize', ssr: false },
     { src: '~plugins/session', ssr: false },
     { src: '~plugins/ws', ssr: false },
     { src: '~plugins/moment' }
