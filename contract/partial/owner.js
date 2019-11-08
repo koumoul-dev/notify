@@ -8,7 +8,7 @@ module.exports = {
     type: {
       type: 'string',
       enum: ['user', 'organization'],
-      description: 'A user or an organization'
+      title: 'Type'
     },
     id: {
       type: 'string',

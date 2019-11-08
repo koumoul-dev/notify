@@ -36,7 +36,7 @@
               </v-btn>
             </template>
             <v-list>
-              <template v-if="user.organizations && user.organizations.length > 1">
+              <template v-if="user.organizations && user.organizations.length">
                 <v-subheader>Changer de compte</v-subheader>
                 <v-list-item v-if="activeAccount.type !== 'user'" @click="switchOrganization()">
                   <v-list-item-title>Compte personnel</v-list-item-title>
@@ -47,10 +47,17 @@
                 <v-divider />
               </template>
 
+              <v-list v-if="user.isAdmin" color="red" dark>
+                <v-subheader>Administration</v-subheader>
+                <v-list-item to="/admin/global-topics">
+                  <v-list-item-title>Sujets globaux</v-list-item-title>
+                </v-list-item>
+              </v-list>
+
               <v-list-item id="toolbar-menu-logout" color="warning" @click="logout">
                 <v-list-item-icon>
                   <v-icon color="warning">
-                    mdi-file-tree
+                    mdi-close-circle-outline
                   </v-icon>
                 </v-list-item-icon>
                 <v-list-item-title>Déconnexion</v-list-item-title>

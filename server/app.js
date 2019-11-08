@@ -31,7 +31,7 @@ app.get('/api/v1/status', auth(), status.status)
 app.get('/api/v1/ping', status.ping)
 
 app.use('/api/v1/session', session.router)
-app.use('/api/v1/topics', auth(), require('./router/topics'))
+app.use('/api/v1/topics', require('./router/topics'))
 app.use('/api/v1/subscriptions', auth(), require('./router/subscriptions'))
 app.use('/api/v1/notifications', require('./router/notifications'))
 
