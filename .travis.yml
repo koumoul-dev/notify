@@ -19,10 +19,10 @@ install:
 script:
 - npm run lint
 - npm run build
-- docker-compose pull
-- NO_UI=true docker-compose up -d
-- sleep 15
-- npm test
+#- docker-compose pull
+#- NO_UI=true docker-compose up -d
+#- sleep 15
+#- npm test
 after_success:
 - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then exit; fi
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
