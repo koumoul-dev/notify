@@ -85,7 +85,6 @@ export default {
       new Notification(notification.title, { body: notification.body })
     })
     Notification.requestPermission(function (status) {
-      console.log('status', status)
       if (Notification.permission !== status) {
         Notification.permission = status
       }

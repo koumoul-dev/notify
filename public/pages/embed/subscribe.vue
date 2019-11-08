@@ -6,14 +6,14 @@
     <v-row v-if="subscription">
       <v-col class="py-0">
         <v-switch
-          v-model="subscription.outputs" dense hide-details class="mt-0" label="navigateur"
+          v-model="subscription.outputs" dense hide-details class="mt-0 mb-1" label="navigateur"
           value="web"
           @change="patch"
         />
       </v-col>
       <v-col class="py-0">
         <v-switch
-          v-model="subscription.outputs" dense hide-details class="mt-0" label="email"
+          v-model="subscription.outputs" dense hide-details class="mt-0 mb-1" label="email"
           value="email" @change="patch"
         />
       </v-col>
