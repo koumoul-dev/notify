@@ -41,8 +41,15 @@ router.post('', asyncWrap(async (req, res, next) => {
   const topicKeys = topicParts.map((part, i) => topicParts.slice(0, i + 1).join(':'))
   const date = new Date().toISOString()
 
+  const filter = { 'topic.key': { $in: topicKeys } }
+  if (req.body.sender) {
+    filter['sender.type'] = req.body.sender.type
+    filter['sender.id'] = req.body.sender.id
+  } else {
+    filter.sender = { $exists: false }
+  }
   const subscriptionsCursor = db.collection('subscriptions')
-    .find({ 'sender.type': req.body.sender.type, 'sender.id': req.body.sender.id, 'topic.key': { $in: topicKeys } })
+    .find()
 
   while (await subscriptionsCursor.hasNext()) {
     const subscription = await subscriptionsCursor.next()

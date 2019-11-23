@@ -1,7 +1,7 @@
 <template>
   <v-container fluid data-iframe-height class="py-0">
     <v-row v-for="topic in topics" :key="topic.key">
-      <subscribe :topic="topic" />
+      <subscribe :topic="topic" :no-sender="!!$route.query.noSender" />
     </v-row>
   </v-container>
 </template>

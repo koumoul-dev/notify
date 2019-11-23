@@ -6,7 +6,7 @@ const topicRef = require('./partial/topic-ref')
 module.exports = {
   type: 'object',
   additionalProperties: false,
-  required: ['sender', 'topic', 'recipient', 'outputs'],
+  required: ['topic', 'recipient', 'outputs'],
   properties: {
     _id: {
       type: 'string',

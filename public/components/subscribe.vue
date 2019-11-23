@@ -27,7 +27,8 @@ import { mapState, mapGetters } from 'vuex'
 
 export default {
   props: {
-    topic: { type: Object, default: null }
+    topic: { type: Object, default: null },
+    noSender: { type: Boolean, default: false }
   },
   data: () => ({
     subscription: null
@@ -43,17 +44,23 @@ export default {
     async refresh () {
       const params = {
         recipient: this.user.id,
-        senderType: this.activeAccount.type,
-        senderId: this.activeAccount.id,
         topic: this.topic.key
+      }
+      if (this.noSender) {
+        params.noSender = 'true'
+      } else {
+        params.senderType = this.activeAccount.type
+        params.senderId = this.activeAccount.id
       }
       this.subscription = (await this.$axios.$get('api/v1/subscriptions', { params })).results[0]
       if (!this.subscription) {
         this.subscription = {
           recipient: { id: this.user.id, name: this.user.name },
-          sender: this.activeAccount,
           topic: this.topic,
           outputs: []
+        }
+        if (!this.noSender) {
+          this.subscription.sender = this.activeAccount
         }
       }
     },
