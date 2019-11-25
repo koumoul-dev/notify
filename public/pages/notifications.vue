@@ -25,7 +25,7 @@
               </v-list-item>
               <v-list-item dense>
                 <v-list-item-content>
-                  <span><strong>Émetteur : </strong> {{ notification.sender.name }}</span>
+                  <span><strong>Émetteur : </strong> {{ notification.sender ? notification.sender.name : 'global' }}</span>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item dense>
