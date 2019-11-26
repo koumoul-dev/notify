@@ -49,7 +49,7 @@ router.post('', asyncWrap(async (req, res, next) => {
     filter.sender = { $exists: false }
   }
   const subscriptionsCursor = db.collection('subscriptions')
-    .find()
+    .find(filter)
 
   while (await subscriptionsCursor.hasNext()) {
     const subscription = await subscriptionsCursor.next()
