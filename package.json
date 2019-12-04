@@ -45,6 +45,7 @@
     "nodemon": "^1.19.4",
     "nuxt": "^2.10.2",
     "reconnecting-websocket": "^4.2.0",
+    "semver-extract": "^1.1.1",
     "shortid": "^2.2.15",
     "vue-moment": "^4.0.0",
     "vuetify": "^2.1.9",
