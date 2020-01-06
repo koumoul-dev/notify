@@ -35,6 +35,8 @@ module.exports = {
     "vue/no-v-html": 'off'
   },
   globals:{
-    H: true
+    H: true,
+    sh: true,
+    rs: true
   }
 }
