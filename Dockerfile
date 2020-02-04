@@ -24,7 +24,7 @@ ADD server server
 
 ADD README.md .
 
-VOLUME /webapp/.nuxt
+VOLUME /webapp/security
 EXPOSE 8080
 
 CMD ["node", "server"]

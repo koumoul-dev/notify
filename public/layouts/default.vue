@@ -23,6 +23,10 @@
               Notifications
               <v-icon>mdi-bell</v-icon>
             </v-tab>
+            <v-tab :to="{name:'push-subscriptions'}">
+              Appareils
+              <v-icon>mdi-cellphone-android</v-icon>
+            </v-tab>
           </v-tabs>
         </v-flex>
         <v-flex

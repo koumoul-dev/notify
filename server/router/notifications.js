@@ -63,6 +63,12 @@ router.post('', asyncWrap(async (req, res, next) => {
     await db.collection('notifications').insertOne(notification)
     if (subscription.outputs.includes('web')) {
       req.app.get('publishWS')([`user:${subscription.recipient.id}:notifications`], notification)
+      const pushSub = await db.collection('pushSubscriptions').findOne({ 'owner.type': 'user', 'owner.id': subscription.recipient.id })
+      if (pushSub) {
+        req.app.get('push').send(pushSub.registrations.map(r => r.id), JSON.stringify(notification)).catch(err => {
+          console.error('Failed to send push notification', err)
+        })
+      }
     }
     if (subscription.outputs.includes('email')) {
       const mail = {

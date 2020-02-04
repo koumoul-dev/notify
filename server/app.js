@@ -34,6 +34,7 @@ app.use('/api/v1/session', session.router)
 app.use('/api/v1/topics', require('./router/topics'))
 app.use('/api/v1/subscriptions', auth(), require('./router/subscriptions'))
 app.use('/api/v1/notifications', require('./router/notifications'))
+app.use('/api/v1/push', auth(), require('./utils/push').router)
 
 // Run app and return it in a promise
 let wss
@@ -44,6 +45,7 @@ exports.start = async () => {
   const { db, client } = await require('./utils/db').init()
   app.set('db', db)
   app.set('client', client)
+  app.set('push', await require('./utils/push').init())
   server.listen(config.port)
   await eventToPromise(server, 'listening')
   wss = await ws.start({ server, db, session })

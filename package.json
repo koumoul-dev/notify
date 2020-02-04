@@ -42,11 +42,13 @@
     "iframe-resizer": "^4.2.3",
     "moment": "^2.24.0",
     "mongodb": "^3.3.3",
+    "node-pushnotifications": "^1.2.0",
     "nodemon": "^1.19.4",
     "nuxt": "^2.10.2",
     "reconnecting-websocket": "^4.2.0",
     "semver-extract": "^1.1.1",
     "shortid": "^2.2.15",
+    "useragent": "^2.3.0",
     "vue-moment": "^4.0.0",
     "vuetify": "^2.1.9",
     "ws": "^7.2.0"

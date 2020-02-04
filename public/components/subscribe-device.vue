@@ -1,0 +1,94 @@
+<template>
+  <v-alert v-if="ready && !subscription" prominent dark color="accent" class="py-0">
+    <v-row>
+      <v-col class="grow">
+        Ajouter cet appareil comme destinataire permanent de vos notifications ?
+      </v-col>
+      <v-col class="shrink">
+        <v-btn text @click="subscribe">
+          confirmer
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-alert>
+</template>
+
+<script>
+
+function urlBase64ToUint8Array (base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4)
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/')
+
+  const rawData = window.atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
+}
+
+export default {
+  data () {
+    return {
+      ready: false,
+      subscription: null,
+      err: null
+    }
+  },
+  async mounted () {
+    // see web-push client example
+    // https://github.com/alex-friedl/webpush-example/blob/master/client/main.js
+
+    if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
+      return console.log('Notifications are not supported')
+    }
+    if (Notification.permission === 'denied') {
+      return console.log('The user has blocked permissions')
+    }
+    if (!('serviceWorker' in navigator)) {
+      return console.log('Service workers are not supported')
+    }
+
+    try {
+      await navigator.serviceWorker.register('./push-sw.js')
+      const serviceWorkerRegistration = await navigator.serviceWorker.ready
+      this.subscription = await serviceWorkerRegistration.pushManager.getSubscription()
+      this.ready = true
+      if (this.subscription) await this.sendSubscription()
+    } catch (err) {
+      console.error('Error while preparing for subscription', err)
+    }
+  },
+  methods: {
+    async subscribe () {
+      try {
+        const serviceWorkerRegistration = await navigator.serviceWorker.ready
+        const vapidKey = await this.$axios.$get('api/v1/push/vapidkey')
+        this.subscription = await serviceWorkerRegistration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidKey.publicKey)
+        })
+        await this.sendSubscription()
+        this.$emit('subscribe', this.subscription)
+      } catch (err) {
+        if (Notification.permission === 'denied') {
+          this.ready = false
+          console.log('The user has blocked permissions')
+        } else {
+          console.error('Error while subscribing', err)
+          this.err = err.message
+        }
+      }
+    },
+    async sendSubscription () {
+      await this.$axios.$post('api/v1/push/subscriptions', this.subscription)
+    }
+  }
+}
+</script>
+
+<style lang="css" scoped>
+</style>
