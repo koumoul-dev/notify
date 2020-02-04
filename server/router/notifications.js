@@ -8,7 +8,7 @@ const validate = ajv.compile(schema)
 const asyncWrap = require('../utils/async-wrap')
 const findUtils = require('../utils/find')
 const auth = require('../utils/auth')
-
+const debug = require('debug')('notifications')
 const router = express.Router()
 
 // Get the list of notifications
@@ -62,9 +62,11 @@ router.post('', asyncWrap(async (req, res, next) => {
     if (!req.body.topic.title && subscription.topic.title) notification.topic.title = subscription.topic.title
     await db.collection('notifications').insertOne(notification)
     if (subscription.outputs.includes('web')) {
+      debug('Send WS notif', subscription.recipient, notification)
       req.app.get('publishWS')([`user:${subscription.recipient.id}:notifications`], notification)
       const pushSub = await db.collection('pushSubscriptions').findOne({ 'owner.type': 'user', 'owner.id': subscription.recipient.id })
       if (pushSub) {
+        debug('Send push notif', subscription.recipient, pushSub.registrations, notification)
         req.app.get('push').send(pushSub.registrations.map(r => r.id), JSON.stringify(notification)).catch(err => {
           console.error('Failed to send push notification', err)
         })
@@ -76,6 +78,7 @@ router.post('', asyncWrap(async (req, res, next) => {
         subject: notification.title,
         text: notification.body
       }
+      debug('Send mail notif', subscription.recipient, mail, notification)
       axios.post(config.directoryUrl + '/api/mails', mail, { params: { key: config.secretKeys.sendMails } }).catch(err => {
         console.error('Failed to send mail', err)
       })

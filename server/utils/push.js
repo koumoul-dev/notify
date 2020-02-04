@@ -6,6 +6,7 @@ const webpush = require('web-push')
 const PushNotifications = require('node-pushnotifications')
 const useragent = require('useragent')
 const asyncWrap = require('./async-wrap')
+const debug = require('debug')('notifications')
 
 fs.ensureDirSync('./security')
 let vapidKeys
@@ -72,7 +73,9 @@ router.post('/subscriptions', asyncWrap(async (req, res) => {
       title: `Cet appareil recevra vos notifications`,
       body: `L'appareil ${agent.toString()} est confirmé comme destinataire des notifications de l'utilisateur ${req.user.name}.`
     })
-    await req.app.get('push').send(req.body, payload)
+    debug('Send push subscription confirmation', req.body, payload)
+    const pushRes = await req.app.get('push').send(req.body, payload)
+    debug('Push notif response', JSON.stringify(pushRes))
   }
   res.send()
 }))
