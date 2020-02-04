@@ -27,6 +27,7 @@
   "homepage": "https://github.com/koumoul-dev/notify#readme",
   "dependencies": {
     "@koumoul/nuxt-build-cache": "^0.3.0",
+    "@koumoul/nuxt-config-inject": "^0.4.2",
     "@koumoul/sd-express": "^0.15.1",
     "@koumoul/sd-vue": "^0.14.2",
     "@koumoul/vuetify-jsonschema-form": "^0.36.0",
