@@ -20,7 +20,7 @@
             <v-list>
               <v-list-item dense>
                 <v-list-item-content>
-                  <span><strong>Date : </strong> {{ registration.date }}</span>
+                  <span><strong>Date : </strong> {{ registration.date | moment('lll') }}</span>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
