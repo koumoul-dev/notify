@@ -1,6 +1,12 @@
 const config = require('config')
 const webpack = require('webpack')
 
+if (process.env.NODE_ENV === 'production') {
+  const nuxtConfigInject = require('@koumoul/nuxt-config-inject')
+  if (process.argv.slice(-1)[0] === 'build') config = nuxtConfigInject.prepare(config)
+  else nuxtConfigInject.replace(config, ['nuxt-dist/**/*', 'public/static/**/*'])
+}
+
 module.exports = {
   srcDir: 'public/',
   build: {
