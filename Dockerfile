@@ -11,14 +11,16 @@ ADD package-lock.json .
 RUN npm install --production
 ADD nodemon.json .
 
+ADD contract contract
+ADD config config
+
 # Adding UI files
 ADD public public
 ADD nuxt.config.js .
+RUN npm run build
 
 # Adding server files
 ADD server server
-ADD contract contract
-ADD config config
 
 ADD README.md .
 
