@@ -1,5 +1,6 @@
-const config = require('config')
 const webpack = require('webpack')
+let config = require('config')
+config.basePath = new URL(config.publicUrl + '/').pathname
 
 if (process.env.NODE_ENV === 'production') {
   const nuxtConfigInject = require('@koumoul/nuxt-config-inject')
@@ -9,6 +10,7 @@ if (process.env.NODE_ENV === 'production') {
 
 module.exports = {
   srcDir: 'public/',
+  buildDir: 'nuxt-dist',
   build: {
     publicPath: config.publicUrl + '/_nuxt/',
     transpile: [/@koumoul/],
@@ -27,7 +29,7 @@ module.exports = {
     { src: '~plugins/moment' }
   ],
   router: {
-    base: new URL(config.publicUrl + '/').pathname
+    base: config.basePath
   },
   modules: ['@nuxtjs/axios', 'cookie-universal-nuxt'],
   axios: {
