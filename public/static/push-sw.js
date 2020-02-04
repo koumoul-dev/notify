@@ -1,3 +1,5 @@
+/* global clients */
+
 // cf web-push client example
 // https://github.com/alex-friedl/webpush-example/blob/master/client/service-worker.js
 
