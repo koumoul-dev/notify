@@ -10,6 +10,7 @@ module.exports = {
     notifications: 'SECRET_NOTIFICATIONS',
     sendMails: 'SECRET_SENDMAILS'
   },
+  gcmAPIKey: 'GCM_API_KEY',
   theme: {
     logo: 'THEME_LOGO',
     notificationIcon: 'THEME_NOTIFICATION_ICON',

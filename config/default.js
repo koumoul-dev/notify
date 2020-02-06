@@ -11,6 +11,7 @@ module.exports = {
     notifications: null,
     sendMails: null
   },
+  gcmAPIKey: null,
   theme: {
     logo: null,
     notificationIcon: null,

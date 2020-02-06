@@ -2,6 +2,7 @@
 // by web push for now, using propriétary protocols for mobile devices later on
 
 const fs = require('fs-extra')
+const config = require('config')
 const webpush = require('web-push')
 const PushNotifications = require('node-pushnotifications')
 const useragent = require('useragent')
@@ -24,7 +25,8 @@ exports.init = async () => {
         subject: 'mailto:Koumoul <contact@koumoul.com>',
         publicKey: vapidKeys.publicKey,
         privateKey: vapidKeys.privateKey
-      }
+      },
+      gcmAPIKey: config.gcmAPIKey
     }
   }
   return new PushNotifications(settings)
