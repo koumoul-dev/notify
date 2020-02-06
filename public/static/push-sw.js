@@ -15,7 +15,7 @@ self.addEventListener('push', function (event) {
     self.registration.showNotification(data.title, {
       body: data.body,
       icon: data.icon,
-      badge: data.badge,
+      // badge: data.badge,
       timestamp: new Date(data.date).getTime(),
       vibrate: [300, 100, 400],
       tag: `${data.topic.key}-${data.date}`
