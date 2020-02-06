@@ -65,19 +65,25 @@ router.post('/subscriptions', asyncWrap(async (req, res) => {
     }
   }
   if (!sub.registrations.find(r => JSON.stringify(r.id) === JSON.stringify(req.body))) {
+    const date = new Date().toISOString()
     sub.registrations.push({
       id: req.body,
       deviceName: agent.toString(),
-      date: new Date().toISOString()
+      date
     })
     await db.collection('pushSubscriptions').replaceOne(ownerFilter, sub, { upsert: true })
     const payload = JSON.stringify({
       title: `Cet appareil recevra vos notifications`,
-      body: `L'appareil ${agent.toString()} est confirmé comme destinataire des notifications de l'utilisateur ${req.user.name}.`
+      body: `L'appareil ${agent.toString()} est confirmé comme destinataire des notifications de l'utilisateur ${req.user.name}.`,
+      icon: config.theme.notificationIcon || config.theme.logo || (config.publicUrl + '/logo-192x192.png'),
+      badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png'),
+      date
     })
     debug('Send push subscription confirmation', req.body, payload)
     const pushRes = await req.app.get('push').send(req.body, payload)
     debug('Push notif response', JSON.stringify(pushRes))
+    const errors = pushRes[0].message.filter(m => !!m.error)
+    if (errors.length) console.error('Failures in push notifications', errors)
   }
   res.send()
 }))
