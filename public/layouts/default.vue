@@ -2,11 +2,11 @@
   <v-app>
     <v-app-bar v-if="user" :height="$vuetify.breakpoint.mdAndDown ? 134 : 72" app>
       <v-layout wrap align-center>
-        <v-flex
-          xs6 sm4 md3 lg2 text-left
-          px-2
-        >
-          <!--<v-img height="56px" contain src="..." />-->
+        <v-flex xs6 sm4 md3 lg2 text-left>
+          <div class="logo-container">
+            <img v-if="env.theme.logo" :src="env.theme.logo">
+            <img v-else src="../static/logo.svg">
+          </div>
         </v-flex>
         <v-flex lg8 order-lg2 xs12 order-xs3>
           <v-tabs centered icons-and-text grow show-arrows color="dark">
@@ -104,6 +104,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['env']),
     ...mapState('session', ['user']),
     ...mapGetters('session', ['activeAccount'])
   },
@@ -121,10 +122,7 @@ export default {
 </script>
 
 <style>
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, .05);
-}
-.main-toolbar {
-  background-color: white;
+.v-app-bar .logo-container img {
+  height:68px;
 }
 </style>

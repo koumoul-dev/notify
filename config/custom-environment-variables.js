@@ -12,6 +12,8 @@ module.exports = {
   },
   theme: {
     logo: 'THEME_LOGO',
+    notificationIcon: 'THEME_NOTIFICATION_ICON',
+    notificationBadge: 'THEME_NOTIFICATION_BADGE',
     colors: {
       primary: 'THEME_PRIMARY',
       secondary: 'THEME_SECONDARY',

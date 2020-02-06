@@ -16,7 +16,8 @@ export default () => {
       }
     },
     actions: {
-      nuxtServerInit ({ dispatch }, { req, env, app }) {
+      nuxtServerInit ({ dispatch, commit }, { req, env, app }) {
+        commit('setAny', { env: { ...env } })
         dispatch('session/init', { cookies: this.$cookies, baseUrl: env.publicUrl + '/api/v1/session' })
       }
     }

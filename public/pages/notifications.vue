@@ -95,6 +95,7 @@ export default {
       this.notifications = (await this.$axios.$get('api/v1/notifications')).results
     },
     async push (notification) {
+      if (notification.icon === null) delete notification.icon
       await this.$axios.$post('api/v1/notifications', notification)
     }
   }

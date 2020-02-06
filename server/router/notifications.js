@@ -54,6 +54,7 @@ router.post('', asyncWrap(async (req, res, next) => {
   while (await subscriptionsCursor.hasNext()) {
     const subscription = await subscriptionsCursor.next()
     const notification = {
+      icon: config.theme.notificationIcon || config.theme.logo || (config.publicUrl + '/logo-192x192.png'),
       ...req.body,
       _id: shortid.generate(),
       recipient: subscription.recipient,
@@ -66,8 +67,9 @@ router.post('', asyncWrap(async (req, res, next) => {
       req.app.get('publishWS')([`user:${subscription.recipient.id}:notifications`], notification)
       const pushSub = await db.collection('pushSubscriptions').findOne({ 'owner.type': 'user', 'owner.id': subscription.recipient.id })
       if (pushSub) {
-        debug('Send push notif', subscription.recipient, pushSub.registrations, notification)
-        req.app.get('push').send(pushSub.registrations.map(r => r.id), JSON.stringify(notification)).catch(err => {
+        const pushNotif = { ...notification, badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png') }
+        debug('Send push notif', subscription.recipient, pushSub.registrations, pushNotif)
+        req.app.get('push').send(pushSub.registrations.map(r => r.id), JSON.stringify(pushNotif)).catch(err => {
           console.error('Failed to send push notification', err)
         })
       }

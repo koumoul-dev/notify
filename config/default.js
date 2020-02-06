@@ -13,6 +13,8 @@ module.exports = {
   },
   theme: {
     logo: null,
+    notificationIcon: null,
+    notificationBadge: null,
     colors: {
       // standard vuetify colors
       primary: '#1E88E5', // blue.darken1

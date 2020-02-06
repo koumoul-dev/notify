@@ -10,17 +10,21 @@ self.addEventListener('install', function () {
 self.addEventListener('push', function (event) {
   console.log('Received a push message', event)
   const data = event.data.json()
-
+  console.log('Push message data', data)
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: data.icon
+      icon: data.icon,
+      badge: data.badge,
+      timestamp: new Date(data).getTime(),
+      vibrate: [300, 100, 400],
+      tag: data.topic.key
     })
   )
 })
 
 self.addEventListener('notificationclick', function (event) {
-  console.log('On notification click: ', event.notification.tag)
+  console.log('Notification click: ', event.notification.tag)
   // Android doesn’t close the notification when you click on it
   // See: http://crbug.com/463146
   event.notification.close()

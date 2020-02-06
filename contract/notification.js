@@ -20,6 +20,10 @@ module.exports = {
       type: 'string',
       title: 'Contenu'
     },
+    icon: {
+      type: 'string',
+      title: `URL de l'icone de la notification`
+    },
     // sender is the owner of the topic
     sender: owner,
     topic: topicRef,
