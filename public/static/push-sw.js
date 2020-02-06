@@ -18,7 +18,7 @@ self.addEventListener('push', function (event) {
       // badge: data.badge,
       timestamp: new Date(data.date).getTime(),
       vibrate: [300, 100, 400],
-      tag: `${data.topic.key}-${data.date}`
+      tag: `${data.topic ? data.topic.key : ''}-${data.date}`
     })
   )
 })
