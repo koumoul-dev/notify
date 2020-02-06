@@ -1,6 +1,11 @@
 <template>
-  <v-alert v-if="ready && !subscription" prominent dark color="accent" class="py-0">
-    <v-row>
+  <v-alert v-if="ready && (!subscription || err)" prominent dark :color="err ? 'error' : 'accent'" class="py-0">
+    <v-row v-if="err">
+      <v-col class="grow">
+        {{ err }}
+      </v-col>
+    </v-row>
+    <v-row v-else>
       <v-col class="grow">
         Ajouter cet appareil comme destinataire permanent de vos notifications ?
       </v-col>
@@ -30,11 +35,18 @@ function urlBase64ToUint8Array (base64String) {
   return outputArray
 }
 
+function equalReg (reg1, reg2) {
+  const val1 = typeof reg1 === 'object' ? reg1.endpoint : reg1
+  const val2 = typeof reg2 === 'object' ? reg2.endpoint : reg2
+  return val1 === val2
+}
+
 export default {
   data () {
     return {
       ready: false,
       subscription: null,
+      remoteSubscription: null,
       err: null
     }
   },
@@ -56,8 +68,15 @@ export default {
       await navigator.serviceWorker.register('./push-sw.js')
       const serviceWorkerRegistration = await navigator.serviceWorker.ready
       this.subscription = await serviceWorkerRegistration.pushManager.getSubscription()
+      if (this.subscription) {
+        const remoteSubscription = await this.getSubscription()
+        if (!remoteSubscription) {
+          console.log('Local subscription is not matched by remote, unsubscribe')
+          await this.subscription.unsubscribe()
+          this.subscription = null
+        }
+      }
       this.ready = true
-      if (this.subscription) await this.sendSubscription()
     } catch (err) {
       console.error('Error while preparing for subscription', err)
     }
@@ -77,11 +96,16 @@ export default {
         if (Notification.permission === 'denied') {
           this.ready = false
           console.log('The user has blocked permissions')
+          this.err = `Les notifications sont bloquées sur cet appareil pour cette application.`
         } else {
           console.error('Error while subscribing', err)
-          this.err = err.message
+          this.err = `Échec lors de l'envoi d'une notification à cet appareil.`
         }
       }
+    },
+    async getSubscription () {
+      const res = await this.$axios.$get('api/v1/push/subscriptions')
+      return res.registrations.find(r => equalReg(r.id, this.subscription))
     },
     async sendSubscription () {
       await this.$axios.$post('api/v1/push/subscriptions', this.subscription)

@@ -45,7 +45,7 @@ exports.start = async () => {
   const { db, client } = await require('./utils/db').init()
   app.set('db', db)
   app.set('client', client)
-  app.set('push', await require('./utils/push').init())
+  app.set('push', await require('./utils/push').init(db))
   server.listen(config.port)
   await eventToPromise(server, 'listening')
   wss = await ws.start({ server, db, session })

@@ -18,7 +18,13 @@ if (!fs.existsSync('./security/vapid.json')) {
   vapidKeys = fs.readJsonSync('./security/vapid.json')
 }
 
-exports.init = async () => {
+function equalReg (reg1, reg2) {
+  const val1 = typeof reg1 === 'object' ? reg1.endpoint : reg1
+  const val2 = typeof reg2 === 'object' ? reg2.endpoint : reg2
+  return val1 === val2
+}
+
+exports.init = async (db) => {
   const settings = {
     web: {
       vapidDetails: {
@@ -29,7 +35,26 @@ exports.init = async () => {
       gcmAPIKey: config.gcmAPIKey
     }
   }
-  return new PushNotifications(settings)
+  const pushNotifications = new PushNotifications(settings)
+  return async (notification) => {
+    const ownerFilter = { 'owner.type': 'user', 'owner.id': notification.recipient.id }
+    const pushSub = await db.collection('pushSubscriptions').findOne(ownerFilter)
+    if (!pushSub) return []
+    const pushNotif = { ...notification, badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png') }
+    debug('Send push notif', notification.recipient, pushSub.registrations, pushNotif)
+    const regIds = pushSub.registrations.map(r => r.id)
+    const res = await pushNotifications.send(regIds, JSON.stringify(pushNotif))
+    const errors = res[0].message.filter(m => !!m.error)
+    if (errors.length) {
+      console.error('Failures in push notifications', errors)
+      errors.forEach(error => {
+        console.warn('Remove broken registration', error.regId)
+        pushSub.registrations = pushSub.registrations.filter(r => !equalReg(r.id, error.regId))
+      })
+      await db.collection('pushSubscriptions').updateOne(ownerFilter, { $set: { registrations: pushSub.registrations } })
+    }
+    return errors
+  }
 }
 
 const router = exports.router = require('express').Router()
@@ -64,7 +89,7 @@ router.post('/subscriptions', asyncWrap(async (req, res) => {
       registrations: []
     }
   }
-  if (!sub.registrations.find(r => JSON.stringify(r.id) === JSON.stringify(req.body))) {
+  if (!sub.registrations.find(r => equalReg(r.id, req.body))) {
     const date = new Date().toISOString()
     sub.registrations.push({
       id: req.body,
@@ -72,18 +97,13 @@ router.post('/subscriptions', asyncWrap(async (req, res) => {
       date
     })
     await db.collection('pushSubscriptions').replaceOne(ownerFilter, sub, { upsert: true })
-    const payload = JSON.stringify({
+    const errors = await req.app.get('push')({
+      recipient: req.user,
       title: `Cet appareil recevra vos notifications`,
       body: `L'appareil ${agent.toString()} est confirmé comme destinataire des notifications de l'utilisateur ${req.user.name}.`,
-      icon: config.theme.notificationIcon || config.theme.logo || (config.publicUrl + '/logo-192x192.png'),
-      badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png'),
       date
     })
-    debug('Send push subscription confirmation', req.body, payload)
-    const pushRes = await req.app.get('push').send(req.body, payload)
-    debug('Push notif response', JSON.stringify(pushRes))
-    const errors = pushRes[0].message.filter(m => !!m.error)
-    if (errors.length) console.error('Failures in push notifications', errors)
+    if (errors.length) return res.status(500).send(errors)
   }
   res.send()
 }))

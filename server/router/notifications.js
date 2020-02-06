@@ -65,20 +65,7 @@ router.post('', asyncWrap(async (req, res, next) => {
     if (subscription.outputs.includes('web')) {
       debug('Send WS notif', subscription.recipient, notification)
       req.app.get('publishWS')([`user:${subscription.recipient.id}:notifications`], notification)
-      const pushSub = await db.collection('pushSubscriptions').findOne({ 'owner.type': 'user', 'owner.id': subscription.recipient.id })
-      if (pushSub) {
-        const pushNotif = { ...notification, badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png') }
-        debug('Send push notif', subscription.recipient, pushSub.registrations, pushNotif)
-        const regIds = pushSub.registrations.map(r => r.id)
-        req.app.get('push').send(regIds, JSON.stringify(pushNotif))
-          .then(res => {
-            const errors = res[0].message.filter(m => !!m.error)
-            if (errors.length) console.error('Failures in push notifications', errors)
-          })
-          .catch(err => {
-            console.error('Failed to send push notification', err)
-          })
-      }
+      req.app.get('push')(notification).catch(err => console.error('Failed to send push notification', err))
     }
     if (subscription.outputs.includes('email')) {
       const mail = {
