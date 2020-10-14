@@ -13,15 +13,21 @@ const router = express.Router()
 
 // Get the list of notifications
 router.get('', auth(), asyncWrap(async (req, res, next) => {
+  const db = req.app.get('db')
   const sort = { date: -1 }
   const [skip, size] = findUtils.pagination(req.query)
   const query = { 'recipient.id': req.user.id }
-  const notifications = req.app.get('db').collection('notifications')
-  const [results, count] = await Promise.all([
-    size > 0 ? notifications.find(query).limit(size).skip(skip).sort(sort).toArray() : Promise.resolve([]),
-    notifications.countDocuments(query)
-  ])
-  res.json({ results, count })
+  const pointer = (await db.collection('pointers')
+    .findOneAndReplace({ 'recipient.id': req.user.id }, { recipient: { id: req.user.id, name: req.user.name }, date: new Date().toISOString() }, { returnOriginal: true, upsert: true })).value
+  const notifications = db.collection('notifications')
+  const resultsPromise = notifications.find(query).limit(size).skip(skip).sort(sort).toArray()
+  const countPromise = notifications.countDocuments(query)
+  const countNewPromise = pointer ? notifications.countDocuments({ ...query, date: { $gt: pointer.date } }) : countPromise
+  const [results, count, countNew] = await Promise.all([resultsPromise, countPromise, countNewPromise])
+  results.forEach(notif => {
+    if (!pointer || notif.date > pointer.date) notif.new = true
+  })
+  res.json({ results, count, countNew })
 }))
 
 // push a notification

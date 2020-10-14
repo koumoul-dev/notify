@@ -34,6 +34,10 @@ module.exports = {
       type: 'string',
       description: 'reception date',
       format: 'date-time'
+    },
+    new: {
+      readOnly: true,
+      type: 'boolean'
     }
   }
 }
