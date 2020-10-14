@@ -17,8 +17,14 @@ router.get('', auth(), asyncWrap(async (req, res, next) => {
   const sort = { date: -1 }
   const [skip, size] = findUtils.pagination(req.query)
   const query = { 'recipient.id': req.user.id }
-  const pointer = (await db.collection('pointers')
-    .findOneAndReplace({ 'recipient.id': req.user.id }, { recipient: { id: req.user.id, name: req.user.name }, date: new Date().toISOString() }, { returnOriginal: true, upsert: true })).value
+  let pointer
+  if (size > 0) {
+    pointer = (await db.collection('pointers')
+      .findOneAndReplace({ 'recipient.id': req.user.id }, { recipient: { id: req.user.id, name: req.user.name }, date: new Date().toISOString() }, { returnOriginal: true, upsert: true })).value
+  } else {
+    pointer = await db.collection('pointers').findOne({ 'recipient.id': req.user.id })
+  }
+
   const notifications = db.collection('notifications')
   const resultsPromise = notifications.find(query).limit(size).skip(skip).sort(sort).toArray()
   const countPromise = notifications.countDocuments(query)
