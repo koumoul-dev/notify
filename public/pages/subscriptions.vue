@@ -19,7 +19,7 @@
           <v-card-text class="px-0 pt-0">
             <v-list>
               <v-list-item dense>
-                <v-list-item-content>
+                <v-list-item-content v-if="sub.sender">
                   <span><strong>Émetteur : </strong> {{ sub.sender.name }}</span>
                 </v-list-item-content>
               </v-list-item>
