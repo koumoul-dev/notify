@@ -11,10 +11,6 @@
         <v-flex lg8 order-lg2 xs12 order-xs3>
           <v-tabs centered icons-and-text grow show-arrows color="dark">
             <v-tabs-slider color="accent" />
-            <v-tab :to="{name:'topics'}">
-              Sujets
-              <v-icon>mdi-file-tree</v-icon>
-            </v-tab>
             <v-tab :to="{name:'subscriptions'}">
               Souscriptions
               <v-icon>mdi-routes</v-icon>
