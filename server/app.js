@@ -35,7 +35,7 @@ app.use('/api/v1/topics', require('./router/topics'))
 app.use('/api/v1/subscriptions', auth(), require('./router/subscriptions'))
 app.use('/api/v1/notifications', require('./router/notifications'))
 app.use('/api/v1/push', auth(), require('./utils/push').router)
-app.use('/api/v1/identities', require('./routers/identities'))
+app.use('/api/v1/identities', require('./router/identities'))
 
 // Run app and return it in a promise
 let wss
