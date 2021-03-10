@@ -24,13 +24,17 @@ exports.ensureIndex = async (db, collection, key, options = {}) => {
 
 exports.connect = async () => {
   let client
+  const opts = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
   try {
-    client = await MongoClient.connect(config.mongoUrl, { useNewUrlParser: true })
+    client = await MongoClient.connect(config.mongoUrl, opts)
   } catch (err) {
     // 1 retry after 1s
     // solve the quite common case in docker-compose of the service starting at the same time as the db
     await new Promise(resolve => setTimeout(resolve, 1000))
-    client = await MongoClient.connect(config.mongoUrl, { useNewUrlParser: true })
+    client = await MongoClient.connect(config.mongoUrl, opts)
   }
   const db = client.db()
   return { db, client }
