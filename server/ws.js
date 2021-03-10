@@ -27,7 +27,9 @@ exports.stop = async (wss) => {
 }
 
 async function channel (db) {
-  return db.createCollection('messages', { capped: true, size: 100000, max: 1000 })
+  const collection = (await db.listCollections({ name: 'messages' }).toArray())[0]
+  if (!collection) await db.createCollection('messages', { capped: true, size: 100000, max: 1000 })
+  return db.collection('messages')
 }
 
 exports.start = async ({ server, db, session }) => {
