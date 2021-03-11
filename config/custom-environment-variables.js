@@ -11,6 +11,17 @@ module.exports = {
     sendMails: 'SECRET_SENDMAILS'
   },
   gcmAPIKey: 'GCM_API_KEY',
+  apn: {
+    token: {
+      key: 'APN_TOKEN_KEY',
+      keyId: 'APN_TOKEN_KEY_ID',
+      teamId: 'APN_TOKEN_TEAM_ID'
+    },
+    production: {
+      __name: 'APN_PRODUCTION',
+      __format: 'json'
+    }
+  },
   theme: {
     logo: 'THEME_LOGO',
     notificationIcon: 'THEME_NOTIFICATION_ICON',

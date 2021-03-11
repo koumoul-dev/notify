@@ -12,6 +12,14 @@ module.exports = {
     sendMails: null
   },
   gcmAPIKey: null,
+  apn: {
+    token: {
+      key: null,
+      keyId: null,
+      teamId: null
+    },
+    production: false
+  },
   theme: {
     logo: null,
     notificationIcon: null,

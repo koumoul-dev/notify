@@ -35,6 +35,9 @@ exports.init = async (db) => {
       gcmAPIKey: config.gcmAPIKey
     }
   }
+  if (config.apn.token.key) {
+    settings.apn = config.apn
+  }
   const pushNotifications = new PushNotifications(settings)
   return async (notification) => {
     const ownerFilter = { 'owner.type': 'user', 'owner.id': notification.recipient.id }
