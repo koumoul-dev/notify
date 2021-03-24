@@ -3,3 +3,4 @@ npm-debug.log
 .nuxt
 nuxt-dist
 security
+config/local-*

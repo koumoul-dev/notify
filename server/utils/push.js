@@ -50,8 +50,9 @@ exports.init = async (db) => {
         badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png'),
         ...config.defaultPushNotif[registration.type || 'webpush']
       }
-      debug('Send push notif', notification.recipient, registration, pushNotif)
-      const res = await pushNotifications.send([registration.id], JSON.stringify(pushNotif))
+      delete pushNotif.recipient
+      const res = await pushNotifications.send([registration.id], pushNotif)
+      debug('Send push notif', notification.recipient.id, registration, pushNotif, res[0])
       const error = res[0].message.filter(m => !!m.error)[0]
       if (error) {
         errors.push(error)
