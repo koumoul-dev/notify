@@ -62,7 +62,7 @@ exports.init = async (db) => {
           // TODO we should implement exponential backoff retry in this case
           console.log('push failed with transient error, ignore it', error.error.body, JSON.stringify(errorRegistration))
         } else {
-          console.warn('Unmanaged error, remove potentially broken registration to prevent spamming', error.regId)
+          console.warn('Unmanaged error, remove potentially broken registration to prevent spamming', error)
           pushSub.registrations = pushSub.registrations.filter(r => !equalReg(r.id, error.regId))
         }
       })
