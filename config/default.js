@@ -20,6 +20,10 @@ module.exports = {
     },
     production: false
   },
+  defaultPushNotif: {
+    apn: {},
+    webpush: {}
+  },
   theme: {
     logo: null,
     notificationIcon: null,

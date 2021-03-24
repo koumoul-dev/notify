@@ -22,6 +22,16 @@ module.exports = {
       __format: 'json'
     }
   },
+  defaultPushNotif: {
+    apn: {
+      __name: 'DEFAULT_PUSH_NOTIF_APN',
+      __format: 'json'
+    },
+    webpush: {
+      __name: 'DEFAULT_PUSH_NOTIF_WEBPUSH',
+      __format: 'json'
+    }
+  },
   theme: {
     logo: 'THEME_LOGO',
     notificationIcon: 'THEME_NOTIFICATION_ICON',

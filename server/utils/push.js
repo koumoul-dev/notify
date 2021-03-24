@@ -43,31 +43,31 @@ exports.init = async (db) => {
     const ownerFilter = { 'owner.type': 'user', 'owner.id': notification.recipient.id }
     const pushSub = await db.collection('pushSubscriptions').findOne(ownerFilter)
     if (!pushSub) return []
-    const pushNotif = { ...notification, badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png') }
-    debug('Send push notif', notification.recipient, pushSub.registrations, pushNotif)
-    const regIds = pushSub.registrations.map(r => r.id)
-    const res = await pushNotifications.send(regIds, JSON.stringify(pushNotif))
-    const errors = res[0].message.filter(m => !!m.error)
-    if (errors.length) {
-      errors.forEach(error => {
-        const errorRegistration = pushSub.registrations.find(r => equalReg(r.id, error.regId))
-        if (!errorRegistration) {
-          console.error('Push notification error does not match known registration', pushSub.registrations, error.regId)
-          return
-        }
+    const errors = []
+    for (const registration of pushSub.registrations) {
+      const pushNotif = {
+        ...notification,
+        badge: config.theme.notificationBadge || (config.publicUrl + '/badge-72x72.png'),
+        ...config.defaultPushNotif[registration.type || 'webpush']
+      }
+      debug('Send push notif', notification.recipient, registration, pushNotif)
+      const res = await pushNotifications.send([registration.id], JSON.stringify(pushNotif))
+      const error = res[0].message.filter(m => !!m.error)[0]
+      if (error) {
+        errors.push(error)
         if (error.error && error.error.statusCode === 410) {
-          console.log('registration has unsubscribed or expired, remove it', error.error.body || error.error.response || error.error.statusCode, JSON.stringify(errorRegistration))
+          console.log('registration has unsubscribed or expired, remove it', error.error.body || error.error.response || error.error.statusCode, JSON.stringify(registration))
           pushSub.registrations = pushSub.registrations.filter(r => !equalReg(r.id, error.regId))
         } else if (error.error && error.error.statusCode === 500 && error.error.body && error.error.body.includes('transient internal error')) {
           // TODO we should implement exponential backoff retry in this case
-          console.log('push failed with transient error, ignore it', error.error.body, JSON.stringify(errorRegistration))
+          console.log('push failed with transient error, ignore it', error.error.body, JSON.stringify(registration))
         } else {
           console.warn('Unmanaged error, remove potentially broken registration to prevent spamming', error)
           pushSub.registrations = pushSub.registrations.filter(r => !equalReg(r.id, error.regId))
         }
-      })
-      await db.collection('pushSubscriptions').updateOne(ownerFilter, { $set: { registrations: pushSub.registrations } })
+      }
     }
+    await db.collection('pushSubscriptions').updateOne(ownerFilter, { $set: { registrations: pushSub.registrations } })
     return errors
   }
 }
