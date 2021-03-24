@@ -78,24 +78,35 @@ router.get('/vapidkey', (req, res) => {
   res.send({ publicKey: vapidKeys.publicKey })
 })
 
-router.get('/subscriptions', asyncWrap(async (req, res) => {
+router.get('/registrations', asyncWrap(async (req, res) => {
   if (!req.user) return res.status(401).send()
   const db = await req.app.get('db')
   const ownerFilter = { 'owner.type': 'user', 'owner.id': req.user.id }
-  let sub = await db.collection('pushSubscriptions').findOne(ownerFilter)
-  if (!sub) {
-    sub = {
-      owner: { type: 'user', id: req.user.id, name: req.user.name },
-      registrations: []
-    }
-  }
-  res.send(sub)
+  const sub = await db.collection('pushSubscriptions').findOne(ownerFilter)
+  const registrations = (sub && sub.registrations) || []
+  registrations.forEach(r => { r.type = r.type || 'webpush' })
+  res.send(registrations)
 }))
 
-router.post('/subscriptions', asyncWrap(async (req, res) => {
+router.put('/registrations', asyncWrap(async (req, res) => {
   if (!req.user) return res.status(401).send()
   const db = await req.app.get('db')
+  const ownerFilter = { 'owner.type': 'user', 'owner.id': req.user.id }
+  await db.collection('pushSubscriptions').findOneAndUpdate(ownerFilter, { $set: { registrations: req.body } })
+  res.send(req.body)
+}))
+
+// a shortcut to register current device
+router.post('/registrations', asyncWrap(async (req, res) => {
+  if (!req.user) return res.status(401).send()
+  if (!req.body.id) return res.status(400).send('id is required')
+  const db = await req.app.get('db')
   const agent = useragent.parse(req.headers['user-agent'])
+  const date = new Date().toISOString()
+  const registration = { ...req.body, date }
+  if (!registration.type) registration.type = 'webpush'
+  if (!registration.deviceName) registration.deviceName = agent.toString()
+
   const ownerFilter = { 'owner.type': 'user', 'owner.id': req.user.id }
   let sub = await db.collection('pushSubscriptions').findOne(ownerFilter)
   if (!sub) {
@@ -104,18 +115,13 @@ router.post('/subscriptions', asyncWrap(async (req, res) => {
       registrations: []
     }
   }
-  if (!sub.registrations.find(r => equalReg(r.id, req.body))) {
-    const date = new Date().toISOString()
-    sub.registrations.push({
-      id: req.body,
-      deviceName: agent.toString(),
-      date
-    })
+  if (!sub.registrations.find(r => equalReg(r.id, req.body.id))) {
+    sub.registrations.push(registration)
     await db.collection('pushSubscriptions').replaceOne(ownerFilter, sub, { upsert: true })
     const errors = await req.app.get('push')({
       recipient: req.user,
-      title: `Cet appareil recevra vos notifications`,
-      body: `L'appareil ${agent.toString()} est confirmé comme destinataire des notifications de l'utilisateur ${req.user.name}.`,
+      title: `Un nouvel appareil recevra vos notifications`,
+      body: `L'appareil ${registration.deviceName} est confirmé comme destinataire des notifications de l'utilisateur ${req.user.name}.`,
       date
     })
     if (errors.length) return res.status(500).send(errors)

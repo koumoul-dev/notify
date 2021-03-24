@@ -10,7 +10,7 @@
         Ajouter cet appareil comme destinataire permanent de vos notifications ?
       </v-col>
       <v-col class="shrink">
-        <v-btn text @click="subscribe">
+        <v-btn text @click="register">
           confirmer
         </v-btn>
       </v-col>
@@ -69,8 +69,8 @@ export default {
       const serviceWorkerRegistration = await navigator.serviceWorker.ready
       this.subscription = await serviceWorkerRegistration.pushManager.getSubscription()
       if (this.subscription) {
-        const remoteSubscription = await this.getSubscription()
-        if (!remoteSubscription) {
+        const registration = await this.getRegistration()
+        if (!registration) {
           console.log('Local subscription is not matched by remote, unsubscribe')
           await this.subscription.unsubscribe()
           this.subscription = null
@@ -82,16 +82,17 @@ export default {
     }
   },
   methods: {
-    async subscribe () {
+    async register () {
       try {
         const serviceWorkerRegistration = await navigator.serviceWorker.ready
         const vapidKey = await this.$axios.$get('api/v1/push/vapidkey')
-        this.subscription = await serviceWorkerRegistration.pushManager.subscribe({
+        const registrationId = await serviceWorkerRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(vapidKey.publicKey)
         })
-        await this.sendSubscription()
-        this.$emit('subscribe', this.subscription)
+        await this.sendBrowserRegistration(registrationId)
+        this.$emit('register', registrationId)
+        this.subscription = registrationId
       } catch (err) {
         if (Notification.permission === 'denied') {
           this.ready = false
@@ -103,12 +104,12 @@ export default {
         }
       }
     },
-    async getSubscription () {
-      const res = await this.$axios.$get('api/v1/push/subscriptions')
-      return res.registrations.find(r => equalReg(r.id, this.subscription))
+    async getRegistration () {
+      const res = await this.$axios.$get('api/v1/push/registrations')
+      return res.find(r => equalReg(r.id, this.subscription))
     },
-    async sendSubscription () {
-      await this.$axios.$post('api/v1/push/subscriptions', this.subscription)
+    async sendBrowserRegistration (id) {
+      await this.$axios.$post('api/v1/push/registrations', { id })
     }
   }
 }
