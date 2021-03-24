@@ -3,10 +3,6 @@ services:
   sd:
     image: koumoul/simple-directory:1
     network_mode: host
-    ports:
-      - 8080
-      - 1080
-      - 1025
     environment:
       - DEBUG=webhooks
       - ADMINS=["superadmin@test.com"]
