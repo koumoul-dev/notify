@@ -3,6 +3,7 @@ module.exports = {
   publicUrl: 'PUBLIC_URL',
   wsPublicUrl: 'WS_PUBLIC_URL',
   directoryUrl: 'DIRECTORY_URL',
+  privateDirectoryUrl: 'PRIVATE_DIRECTORY_URL',
   sessionDomain: 'SESSION_DOMAIN',
   mongoUrl: 'MONGO_URL',
   secretKeys: {
