@@ -2,7 +2,7 @@
   <v-container>
     <edit-dialog :schema="schema" @saved="push" />
     <template v-if="notifications && notifications.results.length">
-      <v-row>
+      <v-row class="ma-0">
         {{ notifications.count }} notifications dont {{ notifications.countNew }} nouvelles
       </v-row>
       <v-row>
@@ -15,7 +15,7 @@
             <template>
               <v-card-title class="title py-2">
                 <v-flex text-center pa-0>
-                  {{ notification.title }}
+                  {{ notification.title | localized($i18n.locale) }}
                 </v-flex>
               </v-card-title>
               <v-divider />
@@ -44,7 +44,7 @@
                 </v-list-item>
                 <v-list-item dense>
                   <v-list-item-content>
-                    <span><strong>Contenu : </strong> {{ notification.body }}</span>
+                    <span><strong>Contenu : </strong> {{ notification.body | localized($i18n.locale) }}</span>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -61,16 +61,17 @@
 import { mapState, mapGetters } from 'vuex'
 import eventBus from '~/assets/event-bus'
 import EditDialog from '~/components/edit-dialog'
-const schema = JSON.parse(JSON.stringify(require('../../contract/notification.js')))
-Object.keys(schema.properties).forEach(k => {
-  if (schema.properties[k].readOnly) delete schema.properties[k]
-})
+const schemaBuilder = require('../../contract/notification.js')
+
+const localizeProp = (prop, locale = 'fr') => {
+  if (typeof prop === 'object') return prop[locale] || prop.fr
+  return prop
+}
 
 export default {
   components: { EditDialog },
   data: () => ({
     eventBus,
-    schema,
     notifications: null,
     newNotification: {}
   }),
@@ -79,6 +80,14 @@ export default {
     ...mapGetters('session', ['activeAccount']),
     channel () {
       return `user:${this.user.id}:notifications`
+    },
+    schema () {
+      const schema = JSON.parse(JSON.stringify(schemaBuilder(process.env.i18nLocales.split(','), true)))
+      Object.keys(schema.properties).forEach(k => {
+        if (schema.properties[k].readOnly) delete schema.properties[k]
+        else if (schema.properties[k].type === 'object' && !schema.properties[k].properties) delete schema.properties[k]
+      })
+      return schema
     }
   },
   async mounted () {
@@ -87,7 +96,7 @@ export default {
     eventBus.$on(this.channel, notification => {
       this.refresh()
       // eslint-disable-next-line no-new
-      new Notification(notification.title, { body: notification.body })
+      new Notification(localizeProp(notification.title, this.$i18n.locale), { body: localizeProp(notification.body, this.$i18n.locale) })
     })
     Notification.requestPermission(function (status) {
       if (Notification.permission !== status) {

@@ -1,7 +1,7 @@
 const owner = require('./partial/owner')
 const modifier = require('./partial/modifier')
 
-module.exports = {
+module.exports = () => ({
   type: 'object',
   additionalProperties: false,
   required: ['title', 'owner', 'key'],
@@ -11,11 +11,17 @@ module.exports = {
       title: 'Clé'
     },
     title: {
-      type: 'string',
-      title: 'Libellé'
+      oneOf: [{
+        type: 'string',
+        title: 'Libellé'
+      }, {
+        type: 'object',
+        title: 'Libellé internationalisé',
+        patternProperties: { '.*': { type: 'string' } }
+      }]
     },
     owner,
     created: modifier,
     updated: modifier
   }
-}
+})

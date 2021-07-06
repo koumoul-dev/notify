@@ -3,7 +3,7 @@ const shortid = require('shortid')
 const config = require('config')
 const axios = require('axios')
 const ajv = require('ajv')()
-const schema = require('../../contract/notification')
+const schema = require('../../contract/notification')(config.i18n.locales)
 const validate = ajv.compile(schema)
 const asyncWrap = require('../utils/async-wrap')
 const findUtils = require('../utils/find')
@@ -35,6 +35,14 @@ router.get('', auth(), asyncWrap(async (req, res, next) => {
   })
   res.json({ results, count, countNew })
 }))
+
+const localizeProp = (prop, locale = 'fr') => {
+  if (typeof prop === 'object') return prop[locale] || prop.fr
+  return prop
+}
+const localize = (notif, locale) => {
+  return { ...notif, title: localizeProp(notif.title, locale), body: localizeProp(notif.body, locale) }
+}
 
 // push a notification
 router.post('', asyncWrap(async (req, res, next) => {
@@ -73,17 +81,18 @@ router.post('', asyncWrap(async (req, res, next) => {
       date
     }
     if (!req.body.topic.title && subscription.topic.title) notification.topic.title = subscription.topic.title
+    const localized = localize(notification, subscription.locale)
     await db.collection('notifications').insertOne(notification)
     if (subscription.outputs.includes('web')) {
       debug('Send WS notif', subscription.recipient, notification)
       req.app.get('publishWS')([`user:${subscription.recipient.id}:notifications`], notification)
-      req.app.get('push')(notification).catch(err => console.error('Failed to send push notification', err))
+      req.app.get('push')(localized).catch(err => console.error('Failed to send push notification', err))
     }
     if (subscription.outputs.includes('email')) {
       const mail = {
         to: [{ type: 'user', ...subscription.recipient }],
-        subject: notification.title,
-        text: notification.body
+        subject: localized.title,
+        text: localized.body
       }
       debug('Send mail notif', subscription.recipient, mail, notification)
       axios.post(config.directoryUrl + '/api/mails', mail, { params: { key: config.secretKeys.sendMails } }).catch(err => {

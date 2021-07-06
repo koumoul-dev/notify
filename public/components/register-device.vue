@@ -1,20 +1,17 @@
 <template>
-  <v-alert v-if="ready && (!subscription || err)" prominent dark :color="err ? 'error' : 'accent'" class="py-0">
-    <v-row v-if="err">
-      <v-col class="grow">
-        {{ err }}
-      </v-col>
-    </v-row>
-    <v-row v-else>
-      <v-col class="grow">
-        Ajouter cet appareil comme destinataire permanent de vos notifications ?
-      </v-col>
-      <v-col class="shrink">
-        <v-btn text @click="register">
-          confirmer
-        </v-btn>
-      </v-col>
-    </v-row>
+  <v-alert
+    v-if="ready && (!subscription || err)" prominent dark :color="err ? 'error' : 'accent'" dense
+    class="mb-0"
+  >
+    <template v-if="err">
+      {{ err }}
+    </template>
+    <template v-else>
+      Ajouter cet appareil comme destinataire permanent de vos notifications ?
+      <v-btn text class="mx-2" @click="register">
+        confirmer
+      </v-btn>
+    </template>
   </v-alert>
 </template>
 

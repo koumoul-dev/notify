@@ -1,8 +1,8 @@
 <template>
   <v-app style="background: transparent;">
-    <v-content>
+    <v-main>
       <nuxt />
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 

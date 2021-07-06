@@ -14,12 +14,6 @@ export default () => {
       setAny (state, params) {
         Object.assign(state, params)
       }
-    },
-    actions: {
-      nuxtServerInit ({ dispatch, commit }, { req, env, app }) {
-        commit('setAny', { env: { ...env } })
-        dispatch('session/init', { cookies: this.$cookies, baseUrl: env.publicUrl + '/api/v1/session' })
-      }
     }
   })
 }

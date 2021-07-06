@@ -1,7 +1,9 @@
 <template>
-  <v-container fluid data-iframe-height class="py-0">
-    <v-row><register-device /></v-row>
-    <v-row v-for="topic in topics" :key="topic.key">
+  <v-container fluid data-iframe-height>
+    <div style="display:flex">
+      <register-device />
+    </div>
+    <v-row v-for="topic in topics" :key="topic.key" class="ma-0">
       <subscribe :topic="topic" :no-sender="!!$route.query.noSender" />
     </v-row>
   </v-container>

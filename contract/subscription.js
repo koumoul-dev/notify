@@ -3,7 +3,7 @@ const recipient = require('./partial/recipient')
 const modifier = require('./partial/modifier')
 const topicRef = require('./partial/topic-ref')
 
-module.exports = {
+module.exports = (locales) => ({
   type: 'object',
   additionalProperties: false,
   required: ['topic', 'recipient', 'outputs'],
@@ -16,6 +16,12 @@ module.exports = {
     title: {
       type: 'string',
       title: 'Libellé de la souscription'
+    },
+    locale: {
+      type: 'string',
+      title: 'Langue de la souscription',
+      default: 'fr',
+      enum: locales
     },
     // the sender is the owner of the topic
     sender: owner,
@@ -39,4 +45,4 @@ module.exports = {
     created: modifier,
     updated: modifier
   }
-}
+})

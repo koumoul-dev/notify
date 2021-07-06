@@ -14,24 +14,27 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 module.exports = {
+  ssr: false,
   srcDir: 'public/',
   buildDir: 'nuxt-dist',
   build: {
+    transpile: [/@koumoul/], // Necessary for "à la carte" import of vuetify components
     publicPath: config.publicUrl + '/_nuxt/',
-    transpile: [/@koumoul/],
-    babel: {
-      sourceType: 'unambiguous'
-    },
     extend (config, { isServer, isDev, isClient }) {
+      // config.optimization.minimize = false
       // Ignore all locale files of moment.js, those we want are loaded in plugins/moment.js
       config.plugins.push(new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/))
+    },
+    babel: {
+      sourceType: 'unambiguous'
     }
   },
   plugins: [
     { src: '~plugins/iframe-resize', ssr: false },
     { src: '~plugins/session', ssr: false },
     { src: '~plugins/ws', ssr: false },
-    { src: '~plugins/moment' }
+    { src: '~plugins/moment' },
+    { src: '~plugins/localized' }
   ],
   router: {
     base: config.basePath

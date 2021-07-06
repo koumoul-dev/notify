@@ -1,6 +1,6 @@
 <template>
   <v-col class="py-0 px-1">
-    <v-subheader class="pt-2 px-0" style="height: auto;">
+    <v-subheader class="px-0 my-2" style="height: auto;">
       {{ $t('pages.subscribe.notifyMe', {title: topic.title}) }}
     </v-subheader>
     <v-row v-if="subscription">
@@ -63,6 +63,7 @@ export default {
           this.subscription.sender = this.activeAccount
         }
       }
+      this.subscription.locale = this.$i18n.locale
     },
     async patch () {
       if (this.subscription.outputs.length) {

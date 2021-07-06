@@ -38,6 +38,11 @@
                   <span><strong>Sorties : </strong> {{ sub.outputs && sub.outputs.join(', ') }}</span>
                 </v-list-item-content>
               </v-list-item>
+              <v-list-item v-if="sub.locale" dense>
+                <v-list-item-content>
+                  <span><strong>Locale : </strong> {{ sub.locale }}</span>
+                </v-list-item-content>
+              </v-list-item>
             </v-list>
           </v-card-text>
           <v-divider />
@@ -58,23 +63,26 @@ import { mapState, mapGetters } from 'vuex'
 import eventBus from '~/assets/event-bus'
 import EditDialog from '~/components/edit-dialog'
 import RemoveConfirm from '~/components/remove-confirm'
-const schema = JSON.parse(JSON.stringify(require('../../contract/subscription.js')))
-Object.keys(schema.properties).forEach(k => {
-  if (schema.properties[k].readOnly) delete schema.properties[k]
-})
+const schemaBuilder = require('../../contract/subscription.js')
 
 export default {
   components: { EditDialog, RemoveConfirm },
   data: () => ({
     eventBus,
-    schema,
     recipientSubscriptions: null,
     senderSubscriptions: null,
     newSubscription: {}
   }),
   computed: {
     ...mapState('session', ['user']),
-    ...mapGetters('session', ['activeAccount'])
+    ...mapGetters('session', ['activeAccount']),
+    schema () {
+      const schema = JSON.parse(JSON.stringify(schemaBuilder(process.env.i18nLocales.split(','))))
+      Object.keys(schema.properties).forEach(k => {
+        if (schema.properties[k].readOnly) delete schema.properties[k]
+      })
+      return schema
+    }
   },
   async mounted () {
     await this.refresh()

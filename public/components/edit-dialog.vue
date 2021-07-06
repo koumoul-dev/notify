@@ -22,9 +22,7 @@
 
       <v-card-text>
         <v-form ref="form" v-model="valid">
-          <slot name="form" :valid="valid" :model="editItem">
-            <v-jsonschema-form v-if="editItem" :schema="schema" :model="editItem" :options="{context: {}, requiredMessage: 'Information obligatoire', noDataMessage: 'Aucune valeur correspondante', 'searchMessage': 'Recherchez...'}" @error="error => eventBus.$emit('notification', {error})" />
-          </slot>
+          <v-jsf v-if="editItem" v-model="editItem" :schema="schema" />
         </v-form>
       </v-card-text>
       <v-card-actions>
@@ -41,14 +39,13 @@
 </template>
 
 <script>
-import VJsonschemaForm from '@koumoul/vuetify-jsonschema-form/lib/index.vue'
+import VJsf from '@koumoul/vjsf/lib/VJsf.js'
+import '@koumoul/vjsf/lib/deps/third-party.js'
+import '@koumoul/vjsf/dist/main.css'
 import eventBus from '~/assets/event-bus'
-import { Sketch } from 'vue-color'
-import Vue from 'vue'
-Vue.component('color-picker', Sketch)
 
 export default {
-  components: { VJsonschemaForm },
+  components: { VJsf },
   props: {
     schema: { type: Object, default: null },
     item: { type: Object, default: null }

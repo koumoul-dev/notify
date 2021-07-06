@@ -69,7 +69,7 @@
       </v-layout>
     </v-app-bar>
 
-    <v-content>
+    <v-main>
       <notifications />
       <nuxt v-if="user" />
       <v-container v-else class="text-center pt-12">
@@ -77,7 +77,7 @@
           Se connecter
         </v-btn>
       </v-container>
-    </v-content>
+    </v-main>
 
     <v-footer v-if="$route.name !== 'cartographie'" dark>
       <v-col class="text-center" cols="12">
