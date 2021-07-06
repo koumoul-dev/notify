@@ -8,13 +8,14 @@ ENV NODE_ENV production
 WORKDIR /webapp
 ADD package.json .
 ADD package-lock.json .
-RUN npm install --production
+RUN npm install --production && node-prune
 ADD nodemon.json .
 
 ADD contract contract
 ADD config config
 
 # Adding UI files
+ADD i18n i18n
 ADD public public
 ADD nuxt.config.js .
 RUN npm run build
