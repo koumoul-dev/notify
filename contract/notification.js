@@ -38,6 +38,10 @@ module.exports = {
     new: {
       readOnly: true,
       type: 'boolean'
+    },
+    extra: {
+      type: 'object',
+      description: 'propriétés libres qui varient en fonction du type de notification'
     }
   }
 }

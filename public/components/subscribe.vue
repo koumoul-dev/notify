@@ -1,7 +1,7 @@
 <template>
   <v-col class="py-0 px-1">
     <v-subheader class="pt-2 px-0" style="height: auto;">
-      Me notifier pour {{ topic.title }}.
+      {{ $t('pages.subscribe.notifyMe', {title: topic.title}) }}
     </v-subheader>
     <v-row v-if="subscription">
       <v-col class="py-0">

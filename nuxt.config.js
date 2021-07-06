@@ -1,6 +1,11 @@
 const webpack = require('webpack')
 let config = require('config')
+const i18n = require('./i18n')
 config.basePath = new URL(config.publicUrl + '/').pathname
+config.i18nMessages = i18n.messages
+config.i18nLocales = config.i18n.locales.join(',')
+
+const fr = require('vuetify/es5/locale/fr').default
 
 if (process.env.NODE_ENV === 'production') {
   const nuxtConfigInject = require('@koumoul/nuxt-config-inject')
@@ -31,7 +36,22 @@ module.exports = {
   router: {
     base: config.basePath
   },
-  modules: ['@nuxtjs/axios', 'cookie-universal-nuxt'],
+  modules: ['@nuxtjs/axios', 'cookie-universal-nuxt', ['nuxt-i18n', {
+    seo: false,
+    // cannot come from config as it must be defined at build time (routes are impacted
+    // we will override some of it at runtime using env.i18n
+    locales: i18n.locales,
+    defaultLocale: i18n.defaultLocale,
+    vueI18n: {
+      fallbackLocale: i18n.defaultLocale,
+      messages: config.i18nMessages
+    },
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_lang',
+      alwaysRedirect: true
+    }
+  }]],
   axios: {
     browserBaseURL: config.publicUrl + '/',
     baseURL: `http://localhost:${config.port}/`
@@ -45,13 +65,18 @@ module.exports = {
       themes: {
         light: config.theme.colors
       }
+    },
+    lang: {
+      locales: { fr },
+      current: 'fr'
     }
   },
   env: {
     publicUrl: config.publicUrl,
     wsPublicUrl: config.wsPublicUrl,
     directoryUrl: config.directoryUrl,
-    theme: config.theme
+    theme: config.theme,
+    i18nLocales: config.i18nLocales
   },
   head: {
     title: 'Notify',

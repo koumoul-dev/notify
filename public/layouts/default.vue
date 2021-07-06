@@ -11,15 +11,15 @@
         <v-flex lg8 order-lg2 xs12 order-xs3>
           <v-tabs centered icons-and-text grow show-arrows color="dark">
             <v-tabs-slider color="accent" />
-            <v-tab :to="{name:'subscriptions'}">
+            <v-tab :to="localePath({name:'subscriptions'})">
               Souscriptions
               <v-icon>mdi-routes</v-icon>
             </v-tab>
-            <v-tab :to="{name:'notifications'}">
+            <v-tab :to="localePath({name:'notifications'})">
               Notifications
               <v-icon>mdi-bell</v-icon>
             </v-tab>
-            <v-tab :to="{name:'push-registrations'}">
+            <v-tab :to="localePath({name:'push-registrations'})">
               Appareils
               <v-icon>mdi-cellphone-android</v-icon>
             </v-tab>
@@ -64,6 +64,7 @@
               </v-list-item>
             </v-list>
           </v-menu>
+          <lang-switcher style="position: absolute; right: 8px; top: 16px;" />
         </v-flex>
       </v-layout>
     </v-app-bar>
@@ -88,12 +89,11 @@
 
 <script>
 import Notifications from '../components/notifications.vue'
+import langSwitcher from '../components/lang-switcher.vue'
 import { mapState, mapGetters } from 'vuex'
 
 export default {
-  components: {
-    Notifications
-  },
+  components: { Notifications, langSwitcher },
   data () {
     return {
       uptimeUrl: process.env.uptimeUrl

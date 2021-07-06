@@ -40,5 +40,8 @@ module.exports = {
       warning: '#E91E63', // pink.base
       admin: '#E53935' // red.darken1
     }
+  },
+  i18n: {
+    locales: ['fr', 'en', 'es', 'pt', 'it', 'de']
   }
 }

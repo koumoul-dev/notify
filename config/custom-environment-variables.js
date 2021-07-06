@@ -46,5 +46,11 @@ module.exports = {
       success: 'THEME_SUCCESS',
       warning: 'THEME_WARNING'
     }
+  },
+  i18n: {
+    locales: {
+      __name: 'I18N_LOCALES',
+      __format: 'json'
+    }
   }
 }
